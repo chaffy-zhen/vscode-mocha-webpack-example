@@ -464,4 +464,4 @@ module.exports = config;
 
 下面是本文完整例子，记得star一下！
 
-- [vscode-babel-debug-example](https://github.com/lpreterite/vscode-babel-debug-example)
+- [vscode-mocha-webpack-example](https://github.com/lpreterite/vscode-mocha-webpack-example)
