@@ -1,0 +1,29 @@
+{
+    "presets": [
+        [
+            "env",
+            {
+                "useBuiltIns": false,
+                "modules": false
+            }
+        ]
+    ],
+    "env": {
+        "test": {
+            "presets": [
+                [
+                    "env",
+                    {
+                        "modules": false,
+                        "targets": {
+                            "node": "current"
+                        }
+                    }
+                ]
+            ],
+            "plugins": [
+                "istanbul"
+            ]
+        }
+    }
+}
