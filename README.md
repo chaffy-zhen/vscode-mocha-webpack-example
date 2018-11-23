@@ -1,22 +1,22 @@
 # vscode-mocha-webpack-example
 
-> 逐步创建组件的构建环境
+[webpack](https://webpack.js.org/) 作为目前主流的构建工具，其较快的版本迭代和复杂的配置方式，使得每次开发前需规划相当部分时间来调试。这里将记录整个环境的搭建过程，为新手提供基础思路。
 
-webpack作为目前开发主流的构建工具，每次开发新组建都需要耗时整合各类设置，本文将逐步记录整合过程，为新手提供基础思路。
+就像我在开发`vue-sitemap`时一样，构建工具往往需要达到几个需求：
 
-简单说一下我的需要，我在开发`vue-sitemap`时所需要一下几个基本设置：
-
-- 构建生成commonjs, umd, es三种模式的代码提供给使用者
-- 开发过程中需在vscode编辑器中能方便断点调试
+- 构建生成 CommonJS/UMD/ES Modules 三种模式的代码提供给使用者
+- 开发时候使用 [VS Code](https://code.visualstudio.com/) 编辑器进行断点调试
 - 需运行测试和检查测试覆盖的进度
 
 以上三个作为开发一个组件(`package`)是基础中基础的需求，当然还有更多细节内容需要添加，由于篇幅过长另加文章再说吧。（欢迎各位读者评论留下你认为需要的功能( • ̀ω•́ )✧）
 
 ## 第一步：构建工具
 
-接下来我们先从最基础的开始，上面也提到webpack作为目前主流构建的工具，那么先以此为基础起步吧！
+接下来我们先从最基础的开始，需要安装 [Node.js(10.x)](https://nodejs.org/zh-cn/) 作为所有代码的运行环境， webpack 也是一样。
 
-由于我需要把项目发布至npm的，所以第一步先初次化`package.json`
+#### 初始化项目
+
+由于我需要把项目发布至 npm 的，使用命令初始化项目描述文件 `package.json`
 
 ```sh
 npm init
@@ -27,40 +27,51 @@ npm init
 接下来看看目录结构
 
 ```txt
-dist         //生产文件的目录
-docs         //文档目录
-src          //源代码目录
-src/index.js //入口文件
-tests        //测试代码目录
-package.json
-README.md    //GitHub创建仓库时默认创建
+vscode-mocha-webpack-example
+│  package.json     //项目描述文件
+│  README.md        //GitHub创建仓库时默认创建
+├─src               //源代码目录
+│      index.js     //入口文件
+├─tests             //测试代码目录
+│
+├─dist              //生产文件的目录
+│
+└─docs              //文档目录
 ```
 
-把基本的依赖安装上后，在`package.json`设置构建命令方便之后使用。
+#### 添加 webpack
 
 ```sh
 npm install -D webpack webpack-cli cross-env
+//or
+//yarn add webpack webpack-cli cross-env -D
 ```
 
-> 这里使用的webpack4，后续设置也是基于4来设置，`cross-env`是帮助在win下能正常使用环境变量的包，我开发在win环境于是在这加上。
+> 这里使用的 webpack v4，后续设置也是基于4来设置，`cross-env`是帮助在 win 下能正常使用环境变量的包，我开发在 win 环境于是在这加上。
+
+> [yarn](https://www.yarnpkg.com/zh-Hans/) 是一款快速、可靠、安全的依赖管理工具。如果你觉得 npm 安装时候较慢的话，不妨试试。
+
+
+等依赖下载解决完毕之后，，在`package.json`设置构建命令方便之后使用。
 
 ```json
 //# package.json
 {
-  "version": "0.1.0",
-  "name": "vue-sitemap",
-  "description": "用于管理导航、面包屑及路由等基于vue的功能整合",
-  "main": "./src/index.js",
+  //...
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --propress --hide-modules",
   }
-  ...
 }
 ```
 
+
 这里我们可以尝试运行一下命令`npm run build`尝试能否构建成功，成功的情况下在`dist`目录下会生成`main.js`的文件。
 
-设置`webpack.config.js`来满足我们的满足第一个需要生成三种模式的代码：
+
+#### 配置 webpack
+
+
+创建 `webpack.config.js`文件来配置 webpack 。满足我们的满足第一个需要生成三种模式的代码：
 
 ```js
 //# webpack.config.js
@@ -106,7 +117,9 @@ if (process.env.NODE_ENV === "commonjs") {
 module.exports = config
 ```
 
-加上新的命令
+#### 运行构建
+
+为 `package.json` 添加新的运行命令
 
 ```json
 //# package.json
@@ -126,25 +139,29 @@ module.exports = config
 }
 ```
 
-运行`npm run build`就会为commonjs, es, umd三种模式生成对应的文件。
+运行`npm run build`就会 CommonJS/UMD/ES Modules 三种模式生成对应的文件。
 
 大概是这样子：
 
 ```txt
-./dist/
-    vue-sitemap.common.js
-    vue-sitemap.es.js
-    vue-sitemap.min.js
-    vue-sitemap.js
+├─dist
+│    vue-sitemap.common.js
+│    vue-sitemap.es.js
+│    vue-sitemap.min.js
+│    vue-sitemap.js
 ```
 
 ## 第二步，设置babel
 
-解决兼容我们需要使用上`babel`，在`webpack`的情景下我们需要`babel-loader`，简单设置便可兼容则需要`babel-preset-env`：
+通过 `babel` 使得我们使用最新的语法，而不必担心运行环境不支持的问题。在`webpack`的情景下我们需要`babel-loader`，简单设置便可兼容则需要 `babel-preset-env`：
 
 ```sh
 npm install -D babel babel-cli babel-preset-env
+//or
+//yarn add babel babel-cli babel-preset-env -D
 ```
+
+#### 创建 babel 配置文件
 
 接着在`.babelrc`文件里设置babel兼容的规则：
 
@@ -162,7 +179,9 @@ npm install -D babel babel-cli babel-preset-env
 }
 ```
 
-在`webpack`加上`babel`支持
+#### 为 webpack 添加 babel-loader
+
+当我们使用最新语法编写 JavaScript 时，webpack 会匹配将所有 JS 文件给 `babel` 的处理。
 
 ```js
 const package = require('./package.json')
@@ -203,6 +222,8 @@ module.exports = config
 
 ```sh
 npm install -D mocha mocha-webpack chai chai-as-promised
+//or
+//yarn add mocha mocha-webpack chai chai-as-promised -D
 ```
 
 > 测试代码想使用es新特性时可以使用`mocha-webpack`这个插件。
@@ -248,6 +269,16 @@ babel也需要设置一下：
 ```
 
 为了能测试添加`tests/unit/example.spec.js`和`src/index.js`两个文件，代码如下：
+
+```text
+├─src
+│      index.js
+└─tests
+    └─unit
+            example.spec.js
+
+```
+
 
 ```js
 //# src/index.js
