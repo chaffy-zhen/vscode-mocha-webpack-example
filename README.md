@@ -1,12 +1,13 @@
 # vscode-mocha-webpack-example
 
-[webpack](https://webpack.js.org/) 作为目前主流的构建工具，其较快的版本迭代和复杂的配置方式，使得每次开发前需规划相当部分时间来调试。这里将记录整个环境的搭建过程，为新手提供基础思路。
+[webpack](https://webpack.js.org/) 作为目前主流的构建工具，其较快的版本迭代和复杂的配置方式，使得每次开发前不得不规划相当部分时间来调试。这里将记录整个环境的搭建过程，为新手提供基础思路。
 
 就像我在开发`vue-sitemap`时一样，构建工具往往需要达到几个需求：
 
 - 构建生成 CommonJS/UMD/ES Modules 三种模式的代码提供给使用者
-- 开发时候使用 [VS Code](https://code.visualstudio.com/) 编辑器进行断点调试
 - 需运行测试和检查测试覆盖的进度
+- 开发时候使用 [VS Code](https://code.visualstudio.com/) 编辑器进行断点调试
+
 
 以上三个作为开发一个组件(`package`)是基础中基础的需求，当然还有更多细节内容需要添加，由于篇幅过长另加文章再说吧。（欢迎各位读者评论留下你认为需要的功能( • ̀ω•́ )✧）
 
@@ -27,7 +28,6 @@ npm init
 接下来看看目录结构
 
 ```txt
-vscode-mocha-webpack-example
 │  package.json     //项目描述文件
 │  README.md        //GitHub创建仓库时默认创建
 ├─src               //源代码目录
@@ -232,7 +232,7 @@ npm install -D mocha mocha-webpack chai chai-as-promised
 
 ```json
 {
-    ...
+    //...
     "scripts": {
         "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
         "build:umd": "cross-env NODE_ENV=umd webpack --mode=production --progress --hide-modules",
@@ -240,16 +240,15 @@ npm install -D mocha mocha-webpack chai chai-as-promised
         "build:es": "cross-env NODE_ENV=es webpack --mode=production --progress --hide-modules",
         "test": "cross-env NODE_ENV=test mocha-webpack tests/**/*.spec.js"
     }
-    ...
+    //...
 }
 ```
 
-babel也需要设置一下：
+`.babelrc` 也需要设置一下：
 
 ```json
-//# .babelrc
 {
-    ...
+    //...
     "env": {
         "test": {
             "presets": [
@@ -296,12 +295,8 @@ import { assert } from "chai";
 import { getRole } from "@/index";
 
 describe('Testing', ()=>{
-  it('Packy is admin', ()=>{
-    assert.equal(getRole('Packy'), 'admin');
-  })
-  it("Joan is reader", () => {
-    assert.equal(getRole("Joan"), "reader");
-  });
+  it('Packy is admin', () => { assert.equal(getRole('Packy'), 'admin') })
+  it("Joan is reader", () => { assert.equal(getRole("Joan"), "reader") });
 })
 ```
 
@@ -425,25 +420,27 @@ All files |      100 |      100 |      100 |      100 |                   |
 
 简单说一下这四栏东西代表什么意思：
 
-- Stmts: `Statement coverage` 声明覆盖率，程序中的每个语句都已执行吗？
+- Stmts : `Statement coverage` 声明覆盖率，程序中的每个语句都已执行吗？
 - Branch: `Branch coverage` 分支覆盖率，是否已执行每个控制结构的每个分支（也称为DD路径）（例如if和case语句）？例如，给定if语句，是否已执行true和false分支？
 - Funcs: `Function coverage` 方法覆盖率，是否已调用程序中的每个函数（或子例程）？
 - Lines: `Line coverage` 行代码覆盖，是否已执行源文件中的每个可执行的行？
 
 不在覆盖范围内的代码的行数会在`Uncovered Line`这栏显示。
 
-### 让测试跟进一步，在vscode中调试
+### 让测试跟进一步，在 VS Code 中调试
 
-在vscode中调试需要些额外设置，添加以下代码至`webpack.config.js`。
+
+一些额外设置才能让 VS Code 在测试中联动，添加以下代码至 `webpack.config.js`。
 
 ```js
 //# webpack.config.js
 
-...
+//...
 
 if (process.env.NODE_ENV === "test") {
     config.devtool = "eval-source-map";
     config.output = Object.assign(config.output, {
+    // This will output the absolute path of your source files in the sourcemaps:
         devtoolModuleFilenameTemplate: "[absolute-resource-path]",
     });
 }
@@ -455,13 +452,17 @@ module.exports = config;
 
 > 值得一提的是，原文说`source-map`使用`eval`相关的设置并不能断点，使用`mocha-webpack`不知道为何必须使用`eval`，正常的`source-map`设置却不生效。如果阅读这篇文章的你知道原因的话请在评论通知一下作者我XD
 
-然后就可以打开vscode的调试，把下面代码添加到配置：
+
+#### 在 VS Code 中调试
+
+打开 VS Code 调试面板，在下拉选项中添加配置：
 
 ```json
+
+// 使用 IntelliSense 了解相关属性。
+// 悬停以查看现有属性的描述。
+// 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
 {
-    // 使用 IntelliSense 了解相关属性。 
-    // 悬停以查看现有属性的描述。
-    // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
     {
@@ -485,7 +486,7 @@ module.exports = config;
 }
 ```
 
-现在就可以愉快的使用vscode进行调试了。
+现在就可以愉快的使用 VS Code 进行调试了。
 
 **我的动力来自你的指头，请用你的指头使劲给我个赞吧！d(´ω｀ )**
 
