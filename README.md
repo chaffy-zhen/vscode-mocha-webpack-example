@@ -1,8 +1,8 @@
-# vscode-mocha-webpack-example
+# 用webpack写个现代的JavaScript包
 
 [webpack](https://webpack.js.org/) 作为目前主流的构建工具，其较快的版本迭代和复杂的配置方式，使得每次开发前不得不规划相当部分时间来调试。这里将记录整个环境的搭建过程，为新手提供基础思路。
 
-就像我在开发`vue-sitemap`时一样，构建工具往往需要达到几个需求：
+就像我在开发`vue-sitemap`时一样，构建工具往往需要达到下面几个需求：
 
 - 构建生成 CommonJS/UMD/ES Modules 三种模式的代码提供给使用者
 - 需运行测试和检查测试覆盖的进度
@@ -15,7 +15,7 @@
 
 接下来我们先从最基础的开始，需要安装 [Node.js(10.x)](https://nodejs.org/zh-cn/) 作为所有代码的运行环境， webpack 也是一样。
 
-#### 初始化项目
+### 初始化项目
 
 由于我需要把项目发布至 npm 的，使用命令初始化项目描述文件 `package.json`
 
@@ -39,7 +39,7 @@ npm init
 └─docs              //文档目录
 ```
 
-#### 添加 webpack
+### 添加 webpack
 
 ```sh
 npm install -D webpack webpack-cli cross-env
@@ -64,14 +64,11 @@ npm install -D webpack webpack-cli cross-env
 }
 ```
 
-
 这里我们可以尝试运行一下命令`npm run build`尝试能否构建成功，成功的情况下在`dist`目录下会生成`main.js`的文件。
 
+### 配置 webpack
 
-#### 配置 webpack
-
-
-创建 `webpack.config.js`文件来配置 webpack 。满足我们的满足第一个需要生成三种模式的代码：
+创建 `webpack.config.js`文件来配置 webpack 。为满足我们的第一个需要生成三种模式的代码：
 
 ```js
 //# webpack.config.js
@@ -117,7 +114,7 @@ if (process.env.NODE_ENV === "commonjs") {
 module.exports = config
 ```
 
-#### 运行构建
+### 添加构建命令
 
 为 `package.json` 添加新的运行命令
 
@@ -125,7 +122,7 @@ module.exports = config
 //# package.json
 {
   "version": "0.1.0",
-  "name": "vue-sitemap",
+  "name": "vscode-mocha-webpack-example",
   "description": "用于管理导航、面包屑及路由等基于vue的功能整合",
   "main": "./src/index.js",
   "scripts": {
@@ -145,15 +142,33 @@ module.exports = config
 
 ```txt
 ├─dist
-│    vue-sitemap.common.js
-│    vue-sitemap.es.js
-│    vue-sitemap.min.js
-│    vue-sitemap.js
+│    vscode-mocha-webpack-example.common.js
+│    vscode-mocha-webpack-example.es.js
+│    vscode-mocha-webpack-example.min.js
+│    vscode-mocha-webpack-example.js
 ```
+
+### 指定终端
+
+为了使你的构建文件成为最终发布包的一部分，你必须声明它们。将以下内容添加到package.json：
+
+```json
+"main": "dist/vscode-mocha-webpack-example.common.js",
+"module": "dist/vscode-mocha-webpack-example.es.js",
+"jsnext:main": "dist/vscode-mocha-webpack-example.es.js",
+"files": [
+  "dist",
+  "src"
+],
+```
+
+- `files`部分告诉npm在发布时打包这些文件夹（否则，它们将被忽略，因为它们列在`.gitignore`文件中）
+- `main`定义CommonJS构建的终端
+- `jsnext:main`和`module`定义了ES2015构建的终端（我们定义了两个终端，因为`jsnext:main`是最早使用的规范，而`module`则更符合标准规范）。
 
 ## 第二步，设置babel
 
-通过 `babel` 使得我们使用最新的语法，而不必担心运行环境不支持的问题。在`webpack`的情景下我们需要`babel-loader`，简单设置便可兼容则需要 `babel-preset-env`：
+通过 `babel` 使得我们使用最新的语法，而不必担心运行环境不支持的问题。在`webpack`的下我们需要用到`babel-loader`来导入`babel`支持，关于最新的兼容设置还需使用上`babel-preset-env`：
 
 ```sh
 npm install -D babel babel-cli babel-preset-env
@@ -161,7 +176,7 @@ npm install -D babel babel-cli babel-preset-env
 //yarn add babel babel-cli babel-preset-env -D
 ```
 
-#### 创建 babel 配置文件
+### 创建 babel 配置文件
 
 接着在`.babelrc`文件里设置babel兼容的规则：
 
@@ -179,7 +194,7 @@ npm install -D babel babel-cli babel-preset-env
 }
 ```
 
-#### 为 webpack 添加 babel-loader
+### 为 webpack 添加 babel-loader
 
 当我们使用最新语法编写 JavaScript 时，webpack 会匹配将所有 JS 文件给 `babel` 的处理。
 
@@ -214,7 +229,7 @@ const config = {
 module.exports = config
 ```
 
-到这步构建的基础设置就完成了。
+当运行构建时`webpack`便会加载`babel`及其相关的设置将代码转换并生成，到这步构建相关的设置基本完成。
 
 ## 第三步，添加自动化测试
 
@@ -309,20 +324,21 @@ npm run test
 大概输出是这个样子：
 
 ```txt
-WEBPACK  Compiling...
+ WEBPACK  Compiling...
 
-  [======================== ] 95% (emitting)
- WEBPACK  Compiled successfully in 845ms
+  [=======================  ] 91% (additional chunk assets processing)
+ WEBPACK  Compiled successfully in 5893ms
 
  MOCHA  Testing...
 
 
 
   Testing
-    √ export default is Array
+    √ Packy is admin
+    √ Joan is reader
 
 
-  1 passing (5ms)
+  2 passing (39ms)
 
  MOCHA  Tests completed successfully
 ```
@@ -395,18 +411,19 @@ npm install -D nyc babel-plugin-istanbul
 ```txt
  WEBPACK  Compiling...
 
-  [======================   ] 89% (record hash)
- WEBPACK  Compiled successfully in 836ms
+  [=======================  ] 91% (additional chunk assets processing)
+ WEBPACK  Compiled successfully in 5893ms
 
  MOCHA  Testing...
 
 
 
   Testing
-    √ export default is Array
+    √ Packy is admin
+    √ Joan is reader
 
 
-  1 passing (5ms)
+  2 passing (39ms)
 
  MOCHA  Tests completed successfully
 
@@ -427,10 +444,9 @@ All files |      100 |      100 |      100 |      100 |                   |
 
 不在覆盖范围内的代码的行数会在`Uncovered Line`这栏显示。
 
-### 让测试跟进一步，在 VS Code 中调试
+## 让测试更进一步，在 VS Code 中调试
 
-
-一些额外设置才能让 VS Code 在测试中联动，添加以下代码至 `webpack.config.js`。
+想在VS Code断点调试代码需要额外增加一些设置，添加以下代码至 `webpack.config.js`。
 
 ```js
 //# webpack.config.js
@@ -438,10 +454,10 @@ All files |      100 |      100 |      100 |      100 |                   |
 //...
 
 if (process.env.NODE_ENV === "test") {
-    config.devtool = "eval-source-map";
+    config.devtool = "eval";
     config.output = Object.assign(config.output, {
     // This will output the absolute path of your source files in the sourcemaps:
-        devtoolModuleFilenameTemplate: "[absolute-resource-path]",
+        devtoolModuleFilenameTemplate: "[absolute-resource-path]"
     });
 }
 
@@ -452,8 +468,7 @@ module.exports = config;
 
 > 值得一提的是，原文说`source-map`使用`eval`相关的设置并不能断点，使用`mocha-webpack`不知道为何必须使用`eval`，正常的`source-map`设置却不生效。如果阅读这篇文章的你知道原因的话请在评论通知一下作者我XD
 
-
-#### 在 VS Code 中调试
+### 在 VS Code 中调试
 
 打开 VS Code 调试面板，在下拉选项中添加配置：
 
@@ -486,7 +501,7 @@ module.exports = config;
 }
 ```
 
-现在就可以愉快的使用 VS Code 进行调试了。
+在`src`目录下的源代码或是`tests`目录下的测试代码都能获得断点效果，想马上尝试效果可以下载本文例子[vscode-mocha-webpack-example](https://github.com/lpreterite/vscode-mocha-webpack-example)，安装依赖后就能尝试断点了。
 
 **我的动力来自你的指头，请用你的指头使劲给我个赞吧！d(´ω｀ )**
 

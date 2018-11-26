@@ -2,7 +2,9 @@
   "version": "0.1.0",
   "name": "vscode-mocha-webpack-example",
   "description": "mocha webpack example and support debugging in vscode",
-  "main": "./src/index.js",
+  "main": "dist/main.common.js",
+  "module": "dist/main.es.js",
+  "jsnext:main": "dist/main.es.js",
   "directories": {
     "test": "tests"
   },

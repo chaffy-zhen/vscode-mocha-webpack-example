@@ -47,9 +47,9 @@ if (process.env.NODE_ENV === "commonjs") {
     config.output.filename = `${package.name}.common.js`;
 }
 if (process.env.NODE_ENV === "test") {
-    config.devtool = "eval-source-map"; //If you would to use breakpoint in vscode, then must be set devtool to "eval-source-map"
+    config.devtool = "eval"; //If you would to use breakpoint in vscode, then must be set devtool to "eval"
     config.output = Object.assign(config.output, {
-        devtoolModuleFilenameTemplate: "[absolute-resource-path]",
+        devtoolModuleFilenameTemplate: "[absolute-resource-path]"
     });
 }
 
