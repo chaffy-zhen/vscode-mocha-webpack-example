@@ -521,13 +521,9 @@ if (process.env.NODE_ENV === "test") {
 module.exports = config;
 ```
 
-> 设置参考：[vscode-ts-webpack-node-debug-example](https://github.com/kube/vscode-ts-webpack-node-debug-example)
+### 在VS Code 添加调试代码
 
-> 值得一提的是，原文说`devtool`使用`eval`相关的设置并不能断点，使用`mocha-webpack`不知道为何必须使用`eval`，正常的`source-map`设置却不生效。如果阅读这篇文章的你知道原因的话请在评论通知一下作者我XD
-
-### 在 VS Code 中调试
-
-打开 VS Code 调试面板，在下拉选项中添加配置：
+打开 VS Code 调试面板在下拉选项中选择添加配置（或者直接创建并打开`.vscode/launch.json`文件）：
 
 ```json
 
@@ -558,16 +554,24 @@ module.exports = config;
 }
 ```
 
-在`src`目录下的源代码或是`tests`目录下的测试代码都能获得断点效果，想马上尝试效果可以下载本文例子[vscode-mocha-webpack-example](https://github.com/lpreterite/vscode-mocha-webpack-example)，安装依赖后就能尝试断点了。
+在`src`目录下的源代码或是`tests`目录下的测试代码都能获得断点效果，想马上尝试可以下载本文例子[vscode-mocha-webpack-example](https://github.com/lpreterite/vscode-mocha-webpack-example)，安装依赖后就能尝试断点调试了。
+
+> 设置参考源自[vscode-ts-webpack-node-debug-example](https://github.com/kube/vscode-ts-webpack-node-debug-example)
+
+值得一提的是，上面参考例子原文说`devtool`使用`eval`相关的设置并不能断点，但是在使用`mocha-webpack`调试时上面例子并不能实现断点。在我和公司小伙伴多番寻找`vscode`和`mocha-webpack`的issue后，经过各种尝试下发现设置成`eval-source-map`便能实现最佳断点效果（eval也能实现但是由于断点sourcemap指向的源是生成后的文件导致在断点时多少会产生偏移）。
+
+> 吐槽：在使用`nvm`切换`nodejs`环境时发现`npm`下载不了，打开github的下载链接直接404了，惊悚地发现`npm`整个搬走 (\`Д´*)9 ┴┴，为解决这个问题请下载最新版本`v1.1.7`的`nvm`。
+
+声明：
 
 **我的动力来自你的指头，请用你的指头使劲给我个赞吧！d(´ω｀ )**
 
 **觉得本文有帮助的话不要忘记点一下收藏φ(>ω<*) 哦！**
 
-**同时欢迎各路新手、大神在本文下方吐槽留言，谢谢各位参与！( • ̀ω•́ )✧**
+**同时欢迎各路新手、大神在本文下方吐槽留言，谢谢参与讨论的各位仁兄！( • ̀ω•́ )✧**
 
 下面是本文完整例子，记得star一下！
 
 - [vscode-mocha-webpack-example](https://github.com/lpreterite/vscode-mocha-webpack-example)
 
-最后感谢[Mather](https://github.com/409915016)协同编辑！
+> 最后感谢[Mather](https://github.com/409915016)协同编辑！

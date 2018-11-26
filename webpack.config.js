@@ -50,7 +50,7 @@ if (process.env.NODE_ENV === "test") {
     /**
      * 目前能在vscode中正常断点调试的设置只有两种：
      * eval sourcemap映射生成代码，在使用async/await会导致行数错位
-     * eval-source-map sourcemap映射源代码，并不会出现错位情况。
+     * eval-source-map sourcemap映射源代码，并不会出现错位情况，vscode下调试建议使用。
      */
     config.devtool = "eval-source-map";
     config.output = Object.assign(config.output, {
