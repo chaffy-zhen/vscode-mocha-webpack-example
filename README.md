@@ -444,6 +444,63 @@ All files |      100 |      100 |      100 |      100 |                   |
 
 不在覆盖范围内的代码的行数会在`Uncovered Line`这栏显示。
 
+### 为测试提供async/await支持
+
+在测试中想使用async/await语法，需新增setup.js文件并在入口处添加`babel-polyfill`：
+
+```js
+require("babel-polyfill");
+```
+
+并在`.babelrc`修改`useBuiltIns`为`entry`：
+
+```json
+{
+    ...
+    "env": {
+        "test": {
+            "presets": [
+                [
+                    "env",
+                    {
+                        "useBuiltIns": "entry",
+                        "modules": false,
+                        "targets": {
+                            "node": "current"
+                        }
+                    }
+                ]
+            ],
+            "plugins": [
+                "istanbul"
+            ]
+        }
+    }
+}
+```
+
+接下来在`src/index.js`和`tests/example.spec.js`两个文件添加新的代码：
+
+```js
+//# src/index.js
+export function getUsers(){
+    return new Promise((resolve, reject)=>{
+        setTimeout(()=>{
+            console.log('123')
+            resolve(['Packy', 'Joan'])
+        }, 1000)
+    })
+}
+
+//# tests/unit/example.spec.js
+describe('GetUsers', ()=>{
+  it('get result is Array', async ()=>{
+    const users = await getUsers();
+    assert.isArray(users, "[message]");
+  })
+})
+```
+
 ## 让测试更进一步，在 VS Code 中调试
 
 想在VS Code断点调试代码需要额外增加一些设置，添加以下代码至 `webpack.config.js`。
@@ -454,10 +511,10 @@ All files |      100 |      100 |      100 |      100 |                   |
 //...
 
 if (process.env.NODE_ENV === "test") {
-    config.devtool = "eval";
+    config.devtool = "eval-source-map";
     config.output = Object.assign(config.output, {
-    // This will output the absolute path of your source files in the sourcemaps:
-        devtoolModuleFilenameTemplate: "[absolute-resource-path]"
+        devtoolModuleFilenameTemplate: "[absolute-resource-path]",
+        devtoolFallbackModuleFilenameTemplate: '[absolute-resource-path]?[hash]'
     });
 }
 
@@ -466,7 +523,7 @@ module.exports = config;
 
 > 设置参考：[vscode-ts-webpack-node-debug-example](https://github.com/kube/vscode-ts-webpack-node-debug-example)
 
-> 值得一提的是，原文说`source-map`使用`eval`相关的设置并不能断点，使用`mocha-webpack`不知道为何必须使用`eval`，正常的`source-map`设置却不生效。如果阅读这篇文章的你知道原因的话请在评论通知一下作者我XD
+> 值得一提的是，原文说`devtool`使用`eval`相关的设置并不能断点，使用`mocha-webpack`不知道为何必须使用`eval`，正常的`source-map`设置却不生效。如果阅读这篇文章的你知道原因的话请在评论通知一下作者我XD
 
 ### 在 VS Code 中调试
 
@@ -512,3 +569,5 @@ module.exports = config;
 下面是本文完整例子，记得star一下！
 
 - [vscode-mocha-webpack-example](https://github.com/lpreterite/vscode-mocha-webpack-example)
+
+最后感谢[Mather](https://github.com/409915016)协同编辑！

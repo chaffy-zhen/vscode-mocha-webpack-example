@@ -16,6 +16,8 @@
                 "--timeout",
                 "999999",
                 "--colors",
+                "--require",
+                "tests/setup.js",
                 "tests/**/*.js"
             ],
             "sourceMaps": true,
