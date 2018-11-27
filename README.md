@@ -501,6 +501,8 @@ describe('GetUsers', ()=>{
 })
 ```
 
+运行测试就能看到效果！
+
 ## 让测试更进一步，在 VS Code 中调试
 
 想在VS Code断点调试代码需要额外增加一些设置，添加以下代码至 `webpack.config.js`。
@@ -562,7 +564,7 @@ module.exports = config;
 
 > 吐槽：在使用`nvm`切换`nodejs`环境时发现`npm`下载不了，打开github的下载链接直接404了，惊悚地发现`npm`整个搬走 (\`Д´*)9 ┴┴，为解决这个问题请下载最新版本`v1.1.7`的`nvm`。
 
-声明：
+最后：
 
 **我的动力来自你的指头，请用你的指头使劲给我个赞吧！d(´ω｀ )**
 
@@ -574,4 +576,4 @@ module.exports = config;
 
 - [vscode-mocha-webpack-example](https://github.com/lpreterite/vscode-mocha-webpack-example)
 
-> 最后感谢[Mather](https://github.com/409915016)协同编辑！
+> 同时非常感谢[Mather](https://github.com/409915016)协同编辑！
