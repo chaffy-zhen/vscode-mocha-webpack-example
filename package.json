@@ -2,7 +2,9 @@
   "version": "0.1.0",
   "name": "vscode-mocha-webpack-example",
   "description": "mocha webpack example and support debugging in vscode",
-  "main": "./src/index.js",
+  "main": "dist/main.common.js",
+  "module": "dist/main.es.js",
+  "jsnext:main": "dist/main.es.js",
   "directories": {
     "test": "tests"
   },
@@ -19,6 +21,7 @@
     "babel-cli": "^6.26.0",
     "babel-loader": "^7.1.5",
     "babel-plugin-istanbul": "^5.1.0",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",

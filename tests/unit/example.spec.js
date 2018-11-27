@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { getRole } from "@/index";
+import { getRole, getUsers } from "@/index";
 
 describe('Testing', ()=>{
   it('Packy is admin', ()=>{
@@ -8,4 +8,11 @@ describe('Testing', ()=>{
   it("Joan is reader", () => {
     assert.equal(getRole("Joan"), "reader");
   });
+})
+
+describe('GetUsers', ()=>{
+  it('get result is Array', async ()=>{
+    const users = await getUsers();
+    assert.isArray(users, "[message]");
+  })
 })
